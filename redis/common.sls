@@ -1,7 +1,7 @@
 {% from "redis/map.jinja" import redis_settings with context %}
 
 
-{% set install_from   = redis_settings.install_from -%} 
+{% set install_from   = redis_settings.install_from -%}
 
 
 {% if install_from == 'source' %}
@@ -49,9 +49,15 @@ make-and-install-redis:
     - watch:
       - cmd: get-redis
 
-
 {% elif install_from == 'package' %}
 
+{% if redis_settings.enable_ppa == True %}
+redis_ppa:
+  pkgrepo.managed:
+    - ppa: chris-lea/redis-server
+    - require_in:
+      - pkg: redis-server
+{% endif %}
 
 install-redis:
   pkg.installed:
